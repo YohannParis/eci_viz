@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Female Vs Male Voter Turnout</title>
+</head>
+
+<style>
+
+    .columns {
+        text-align: center;
+        padding-right: 15px;
+        padding-left: 15px;
+        padding-top: 0;
+    }
+
+    .left-div {
+        display: inline-block;
+        max-width: 500px;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .right-div {
+        display: inline-block;
+        max-width: 500px;
+        text-align: left;
+    }
+
+
+
+    @media screen and (max-width: 800px) {
+
+        .left-div,
+        .right-div {
+            max-width: 100%;
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
+</style>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<body>
+    <div>
+        <div id="f_voters_kde" class="left-div"></div>
+        <div id="m_voters_kde" class="right-div"></div>
+    </div>
+
+</body>
+
+
+<script>
+
+
+    // set the dimensions and margins of the graph
+    var margin = { top: 30, right: 30, bottom: 30, left: 50 },
+        width = 460 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    var svg_female = d3.select("#f_voters_kde")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    var svg_male = d3.select("#m_voters_kde")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    // get the data
+    d3.csv("https://raw.githubusercontent.com/scrab017/d3p/master/data_st_included.csv", function (data) {
+
+
+        // add the x Axis
+        var formatPercent = d3.format(".0%");
+
+        var x = d3.scaleLinear()
+            .domain([0, 100])
+            .range([0, width])
+
+        var xaxis = d3.axisBottom()
+            .scale(x)
+            .tickFormat(function (d) { return d + '%' });
+
+        svg_female.append("g")
+            .attr("transform", "translate(0," + height + ")")
+
+            .attr('font-family', 'sans-serif')
+            .call(xaxis)
+
+        svg_male.append("g")
+            .attr("transform", "translate(0," + height + ")")
+
+            .attr('font-family', 'sans-serif')
+            .call(xaxis)
+
+        // add the y Axis
+        var y = d3.scaleLinear()
+            .range([height, 0])
+            .domain([0, 0.05]);
+
+        // add the Title
+        svg_female.append('text')
+            .attr('x', width / 2)
+            .attr('y', 20)
+            .attr('text-anchor', 'middle')
+            .attr('class', 'chart-title')
+            .attr('font-family', 'sans-serif')
+            .text('Female Voter Turnout');
+
+        svg_male.append('text')
+            .attr('x', width / 2)
+            .attr('y', 20)
+            .attr('text-anchor', 'middle')
+            .attr('class', 'chart-title')
+            .attr('font-family', 'sans-serif')
+            .text('Male Voter Turnout');
+
+        // Compute kernel density estimation for male and female voters (1999)
+        var kde = kernelDensityEstimator(kernelEpanechnikov(7), x.ticks(40))
+        var density_female = kde(data
+            .filter(function (d) { return d.year === "1999" })
+            .map(function (d) { return parseFloat(d.f_voters_turnout); }))
+
+        var density_male = kde(data
+            .filter(function (d) { return d.year === "1999" })
+            .map(function (d) { return parseFloat(d.m_voters_turnout); }))
+
+        // color
+        var color = d3.scaleLinear()
+            .domain([0, 1])
+            .range(["white", "#69b3a2"])
+
+        //region gradient color
+        var grad_female = svg_female.append("defs")
+            .append("linearGradient")
+            .attr("id", "grad");
+
+        var grad_male = svg_male.append("defs")
+            .append("linearGradient")
+            .attr("id", "grad");
+
+        grad_female.append("stop").attr("offset", "0%").attr("stop-color", "#5f9ea0");
+        grad_female.append("stop").attr("offset", "45%").attr("stop-color", "#5f9ea0");
+        grad_female.append("stop").attr("offset", "45%").attr("stop-color", "#f5f1f1");
+        grad_female.append("stop").attr("offset", "55%").attr("stop-color", "#f5f1f1");
+        grad_female.append("stop").attr("offset", "55%").attr("stop-color", "#ef8b43");
+        grad_female.append("stop").attr("offset", "75%").attr("stop-color", "#ef8b43");
+        grad_female.append("stop").attr("offset", "75%").attr("stop-color", "#ff0000");
+        grad_female.append("stop").attr("offset", "100%").attr("stop-color", "#ff0000");
+
+        grad_male.append("stop").attr("offset", "0%").attr("stop-color", "#5f9ea0");
+        grad_male.append("stop").attr("offset", "45%").attr("stop-color", "#5f9ea0");
+        grad_male.append("stop").attr("offset", "45%").attr("stop-color", "#f5f1f1");
+        grad_male.append("stop").attr("offset", "55%").attr("stop-color", "#f5f1f1");
+        grad_male.append("stop").attr("offset", "55%").attr("stop-color", "#ef8b43");
+        grad_male.append("stop").attr("offset", "75%").attr("stop-color", "#ef8b43");
+        grad_male.append("stop").attr("offset", "75%").attr("stop-color", "#ff0000");
+        grad_male.append("stop").attr("offset", "100%").attr("stop-color", "#ff0000");
+
+
+        d3.scaleThreshold()
+            .range(['#5f9ea0', '#f5f5f5', '#ffa07a', '#ff0000']);
+
+
+
+        svg_female.append("path")
+            .attr("class", "mypath")
+            .datum(density_female)
+            .attr("fill", "f5f1f1")
+            .style("opacity", "0.1")
+            .attr("opacity", ".3")
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1)
+            .attr("stroke-linejoin", "round")
+            .attr("d", d3.line()
+                .curve(d3.curveBasis)
+                .x(function (d) { return x(d[0]); })
+                .y(function (d) { return y(d[1]); })
+            );
+
+        svg_male.append("path")
+            .attr("class", "mypath")
+            .datum(density_male)
+            .attr("fill", "f5f1f1")
+            .style("opacity", "0.1")
+            .attr("opacity", ".3")
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1)
+            .attr("stroke-linejoin", "round")
+            .attr("d", d3.line()
+                .curve(d3.curveBasis)
+                .x(function (d) { return x(d[0]); })
+                .y(function (d) { return y(d[1]); })
+            );
+
+        // plot data for 1999 (base layer)
+
+
+        // plot the area
+        var plot_female = svg_female.append("path")
+            .attr("class", "mypath")
+            .datum(density_female)
+            .style("fill", "url(#grad)")
+            .attr("opacity", ".6")
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1)
+            .attr("stroke-linejoin", "round")
+            .attr("d", d3.line()
+                .curve(d3.curveBasis)
+                .x(function (d) { return x(d[0]); })
+                .y(function (d) { return y(d[1]); })
+            );
+
+        var plot_male = svg_male.append("path")
+            .attr("class", "mypath")
+            .datum(density_male)
+            .style("fill", "url(#grad)")
+            .attr("opacity", ".6")
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1)
+            .attr("stroke-linejoin", "round")
+            .attr("d", d3.line()
+                .curve(d3.curveBasis)
+                .x(function (d) { return x(d[0]); })
+                .y(function (d) { return y(d[1]); })
+            );
+
+        // add the label
+        var label_female = svg_female.append("text").attr("x", 340).attr("y", 50).text('1999').style("font-size", "20px").style("font-family", "sans-serif").attr("alignment-baseline", "middle")
+        var label_male = svg_male.append("text").attr("x", 340).attr("y", 50).text('1999').style("font-size", "20px").style("font-family", "sans-serif").attr("alignment-baseline", "middle")
+
+        // years array
+        let keyArray = ['1999', '2004', '2009', '2014']
+
+        // counter
+        let currentElem = 0;
+
+        // refresh function with transition
+        setInterval(function () {
+
+            var t = d3.transition().duration(850);
+
+            currentElem++;
+            if (currentElem >= keyArray.length) {
+                currentElem = 0;
+            }
+
+            var density_female = kde(data
+                .filter(function (d) { return d.year === keyArray[currentElem].toString() })
+                .map(function (d) { return parseFloat(d.f_voters_turnout); }))
+
+            var density_male = kde(data
+                .filter(function (d) { return d.year === keyArray[currentElem].toString() })
+                .map(function (d) { return parseFloat(d.m_voters_turnout); }))
+
+
+            plot_female.attr("class", "mypath")
+                .datum(density_female)
+                .style("fill", "url(#grad)")
+                .transition(t)
+                .attr("opacity", ".6")
+                .attr("stroke", "#000")
+                .attr("stroke-width", 1)
+                .attr("stroke-linejoin", "round")
+                .attr("d", d3.line()
+                    .curve(d3.curveBasis)
+                    .x(function (d) { return x(d[0]); })
+                    .y(function (d) { return y(d[1]); })
+                );
+
+            label_female.attr("x", 340).attr("y", 50).text(keyArray[currentElem].toString()).style("font-size", "20px").style("font-family", "sans-serif").attr("alignment-baseline", "middle")
+
+
+            plot_male.attr("class", "mypath")
+                .datum(density_male)
+                .style("fill", "url(#grad)")
+                .transition(t)
+                .attr("opacity", ".6")
+                .attr("stroke", "#000")
+                .attr("stroke-width", 1)
+                .attr("stroke-linejoin", "round")
+                .attr("d", d3.line()
+                    .curve(d3.curveBasis)
+                    .x(function (d) { return x(d[0]); })
+                    .y(function (d) { return y(d[1]); })
+                );
+
+            label_male.attr("x", 340).attr("y", 50).text(keyArray[currentElem].toString()).style("font-size", "20px").style("font-family", "sans-serif").attr("alignment-baseline", "middle")
+        }, 2500);
+    });
+
+
+    // Function to compute density
+    function kernelDensityEstimator(kernel, X) {
+        return function (V) {
+            return X.map(function (x) {
+                return [x, d3.mean(V, function (v) { return kernel(x - v); })];
+            });
+        };
+    }
+    function kernelEpanechnikov(k) {
+        return function (v) {
+            return Math.abs(v /= k) <= 1 ? 0.75 * (1 - v * v) / k : 0;
+        };
+    }
+
+</script>

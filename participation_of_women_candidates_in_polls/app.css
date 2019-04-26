@@ -1,0 +1,50 @@
+div {
+    font-family: "Franklin Gothic Demi URW";
+    width: 1040px;
+    height: 450px;
+    position: relative;
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+}
+
+path.slice {
+    stroke-width: 2px;
+}
+
+h1{
+    font-family: "Franklin Gothic Demi URW";
+    font-size: 20pt;
+    color: #101010;
+}
+
+polyline {
+    opacity: .3;
+    stroke:#101010;
+    stroke-width: 2px;
+    fill: none;
+}
+
+.toolTip {
+    font-family: "Franklin Gothic Demi URW";
+    position: absolute;
+    display: none;
+    width: auto;
+    height: auto;
+    background: none repeat scroll 0 0 white;
+    border: 0 none;
+    border-radius: 8px 8px 8px 8px;
+    box-shadow: -3px 3px 15px #888888;
+    color: #101010;
+    font-size: 15pt;
+    padding: 5px;
+    text-align: center;
+}
+
+footer{
+    font-family: "PT Serif";
+    font-size: 13pt;
+}
+form { margin: 0 auto; }
