@@ -1,3 +1,6 @@
+// Missing Vendors Javascript (D3)
+// Missing self-closing function
+
 var svg = d3.select("#participation_interactive_div")
     .append("svg")
     .append("g")
