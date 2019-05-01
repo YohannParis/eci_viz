@@ -1,20 +1,32 @@
-#participation_interactive_div div {
+.participation_interactive_div_outer {
     font-family: "Franklin Gothic Demi URW";
     width: 1040px;
-    height: 450px;
+    height: 850px;
+    position: relative;
+    padding: 2rem;
+}
+
+.participation_interactive_div_outer footer{
+    font-family: "PT Serif";
+    font-size: 13pt;
+}
+
+#participation_interactive_div {
+    font-family: "Franklin Gothic Demi URW";
+    width: 1040px;
+    height: 550px;
     position: relative;
 }
 
 #participation_interactive_div svg {
     width: 100%;
-    height: 55%;
 }
 
 #participation_interactive_div path.slice {
     stroke-width: 2px;
 }
 
-#participation_interactive_div h1{
+#participation_interactive_div h1 {
     font-family: "Franklin Gothic Demi URW";
     font-size: 20pt;
     color: #101010;
@@ -27,7 +39,7 @@
     fill: none;
 }
 
-#participation_interactive_div.toolTip {
+#participation_interactive_div .toolTip {
     font-family: "Franklin Gothic Demi URW";
     position: absolute;
     display: none;
@@ -43,17 +55,6 @@
     text-align: center;
 }
 
-.participation_interactive_div_outer {
-    font-family: "Franklin Gothic Demi URW";
-    width: 1040px;
-    height: 850px;
-    position: relative;
+#participation_interactive_div form {
+    margin: 0 auto;
 }
-
-.participation_interactive_div_outer footer{
-    font-family: "PT Serif";
-    font-size: 13pt;
-}
-
-
-#participation_interactive_div form { margin: 0 auto; }
